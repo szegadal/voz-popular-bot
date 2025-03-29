@@ -22,6 +22,9 @@ export async function transcribeAudioOpenAI (audioFilePath: string) {
     return audioRes.data.text;
 
   } catch (err: any) {
+    if (err.isAxiosError) {
+      console.log('Error from Axios', err.response?.data);
+    }
     err.name = 'transcribeAudioOpenAIException';
     throw err;
   }

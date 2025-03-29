@@ -1,127 +1,61 @@
-# voz-popular-bot
+# Voz Popular Bot
 
-This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
+> ⚠️ **ADVERTENCIA**: Este proyecto solo se activa para demostraciones (postulaciones de trabajo o pruebas de concepto). Si deseas probarlo, abre un issue en este repositorio o crea un pull request, y me pondré en contacto contigo para activarlo temporalmente.
 
-- hello-world - Code for the application's Lambda function written in TypeScript.
-- events - Invocation events that you can use to invoke the function.
-- hello-world/tests - Unit tests for the application code. 
-- template.yaml - A template that defines the application's AWS resources.
+Bot de Telegram para el programa radial "Voz Popular" de la radioemisora Panamericana en Bolivia.
 
-The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
+## Prueba la herramienta
 
-If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.  
-The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI to build and deploy serverless applications on AWS. The AWS Toolkit also adds a simplified step-through debugging experience for Lambda function code. See the following links to get started.
+Prueba este chatbot escribiendo a [t.me/vozPopularBot](https://t.me/vozPopularBot) y manda un mensaje de audio detallando un nombre inventado, una edad inventada, y una queja inventada hacia un nivel de gobierno (nacional, municipal, etc.).
 
-* [CLion](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [GoLand](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [IntelliJ](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [WebStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [Rider](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PhpStorm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [PyCharm](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [RubyMine](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [DataGrip](https://docs.aws.amazon.com/toolkit-for-jetbrains/latest/userguide/welcome.html)
-* [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
-* [Visual Studio](https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/welcome.html)
+Puedes usar este texto como ejemplo:
+> "Hola, mi nombre es Juan Pérez y tengo 25 años. Me quiero quejar porque el gobierno municipal no está arreglando las calles y hay muchos baches por toda la ciudad."
 
-## Deploy the sample application
+## Funcionamiento
 
-The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
+Este bot de Telegram funciona de la siguiente manera:
 
-To use the SAM CLI, you need the following tools.
+1. Responde a los mensajes de texto enviados por los usuarios con instrucciones, solicitando que envíen un mensaje de audio.
+2. Cuando el usuario envía un mensaje de audio:
+   - Descarga el archivo de audio de Telegram
+   - Transcodifica el audio utilizando FFmpeg
+   - Transcribe el audio a texto usando OpenAI Whisper
+   - Analiza el sentimiento y extrae información relevante del texto utilizando GPT-3.5 Turbo
+   - Envía un resumen al usuario con los datos extraídos (nombre, sexo, edad, sentimiento, nivel de gobierno mencionado, y si el contenido es ofensivo o discriminatorio)
+   - Almacena el archivo transcodificado en AWS S3
 
-* SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-* Node.js - [Install Node.js 16](https://nodejs.org/en/), including the NPM package management tool.
-* Docker - [Install Docker community edition](https://hub.docker.com/search/?type=edition&offering=community)
+El bot está diseñado para recopilar opiniones de radioescuchas que quieran participar en el programa "Voz Popular", facilitando el análisis de los mensajes recibidos.
 
-To build and deploy your application for the first time, run the following in your shell:
+## Stack Tecnológico
 
-```bash
-sam build
-sam deploy --guided
-```
+- **Node.js**: Entorno de ejecución para el código
+- **TypeScript**: Lenguaje de programación utilizado
+- **AWS Lambda**: Para la ejecución serverless del código
+- **AWS API Gateway**: Para exponer el endpoint que recibe las actualizaciones de Telegram
+- **AWS S3**: Para almacenar los archivos de audio transcodificados
+- **Telegram Bot API**: Para la integración con Telegram
+- **OpenAI API**:
+  - GPT-3.5 Turbo: Para el análisis de sentimiento y extracción de información
+  - Whisper: Para la transcripción de audio a texto
+- **FFmpeg**: Para la transcodificación de archivos de audio
 
-The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
+## Limitaciones y Áreas de Mejora
 
-* **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
-* **AWS Region**: The AWS region you want to deploy your app to.
-* **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
-* **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
-* **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
+- **Manejo de errores inadecuado**: El proyecto carece de un manejo de errores robusto, lo que puede llevar a comportamientos inesperados.
+- **Tecnología desactualizada**: Utiliza GPT-3.5 Turbo que ya ha sido superado por versiones más recientes.
+- **Proyecto inicial**: Este fue uno de mis primeros proyectos desarrollado en mayo de 2023, por lo que presenta algunas deficiencias estructurales.
+- **Sin mantenimiento activo**: No he tenido tiempo de actualizar o mejorar el código desde su implementación inicial.
 
-You can find your API Gateway Endpoint URL in the output values displayed after deployment.
+## Instalación y Configuración
 
-## Use the SAM CLI to build and test locally
+Para configurar este proyecto localmente, necesitarás:
 
-Build your application with the `sam build` command.
+1. Crear un bot de Telegram y obtener su token
+2. Configurar una cuenta de AWS y los servicios correspondientes
+3. Obtener una API key de OpenAI
+4. Configurar las variables de entorno necesarias
+5. Desplegar el código en AWS Lambda
 
-```bash
-voz-popular-bot$ sam build
-```
+## Contribuciones
 
-The SAM CLI installs dependencies defined in `hello-world/package.json`, compiles TypeScript with esbuild, creates a deployment package, and saves it in the `.aws-sam/build` folder.
-
-Test a single function by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project.
-
-Run functions locally and invoke them with the `sam local invoke` command.
-
-```bash
-voz-popular-bot$ sam local invoke HelloWorldFunction --event events/event.json
-```
-
-The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
-
-```bash
-voz-popular-bot$ sam local start-api
-voz-popular-bot$ curl http://localhost:3000/
-```
-
-The SAM CLI reads the application template to determine the API's routes and the functions that they invoke. The `Events` property on each function's definition includes the route and method for each path.
-
-```yaml
-      Events:
-        HelloWorld:
-          Type: Api
-          Properties:
-            Path: /hello
-            Method: get
-```
-
-## Add a resource to your application
-The application template uses AWS Serverless Application Model (AWS SAM) to define application resources. AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, and APIs. For resources not included in [the SAM specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md), you can use standard [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) resource types.
-
-## Fetch, tail, and filter Lambda function logs
-
-To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs` lets you fetch logs generated by your deployed Lambda function from the command line. In addition to printing the logs on the terminal, this command has several nifty features to help you quickly find the bug.
-
-`NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
-
-```bash
-voz-popular-bot$ sam logs -n HelloWorldFunction --stack-name voz-popular-bot --tail
-```
-
-You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
-
-## Unit tests
-
-Tests are defined in the `hello-world/tests` folder in this project. Use NPM to install the [Jest test framework](https://jestjs.io/) and run unit tests.
-
-```bash
-voz-popular-bot$ cd hello-world
-hello-world$ npm install
-hello-world$ npm run test
-```
-
-## Cleanup
-
-To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
-
-```bash
-aws cloudformation delete-stack --stack-name voz-popular-bot
-```
-
-## Resources
-
-See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
-
-Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
+Este proyecto es demostrativo y no recibe contribuciones.
